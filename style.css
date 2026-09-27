@@ -1,0 +1,72 @@
+/* ===== 基本設定 ===== */
+:root {
+  --bg: #000;          /* 有機ELで画素が消灯する真っ黒 */
+  --fg: #e8e8e8;       /* 真っ白より少し落として焼き付きと眩しさを抑える */
+  --muted: #8a8a8a;
+  --accent: #4ade80;
+  --warn: #f87171;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, "Hiragino Sans", "Helvetica Neue", sans-serif;
+  /* スクロール・拡大・長押し選択を無効化して「置き時計」らしくする */
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+body { position: fixed; inset: 0; }
+
+/* 切り欠き・角・ホームバーを避けた安全な表示領域 */
+#app {
+  position: absolute;
+  inset: 0;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ===== 時計 ===== */
+.clock { text-align: center; }
+
+.time {
+  font-size: min(24vw, 50vh);
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.date {
+  margin-top: 4px;
+  font-size: min(5vw, 9vh);
+  color: var(--muted);
+}
+
+/* ===== P0 検証用 ===== */
+.diag {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.diag .ok { color: var(--accent); }
+.diag .ng { color: var(--warn); }
+.diag .hint { opacity: 0.6; }

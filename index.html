@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <!-- viewport-fit=cover: 切り欠き・角の裏まで黒背景を広げる -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <!-- ホーム画面から起動したときにSafariのUIを出さない -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SubMonitor">
+  <meta name="theme-color" content="#000000">
+  <title>SubMonitor</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon-180.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app">
+    <section class="clock">
+      <div id="time" class="time">--:--</div>
+      <div id="date" class="date">----</div>
+    </section>
+
+    <!-- P0 検証用の表示。P1以降で消す -->
+    <section id="diag" class="diag" aria-label="動作確認">
+      <div>表示モード: <span id="d-mode">-</span></div>
+      <div>画面スリープ防止: <span id="d-wake">-</span></div>
+      <div>連続稼働: <span id="d-uptime">0:00:00</span></div>
+      <div>画面サイズ: <span id="d-size">-</span></div>
+      <div class="hint">画面をタップすると画面スリープ防止を再取得します</div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
