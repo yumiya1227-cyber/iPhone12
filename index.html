@@ -2,9 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <!-- viewport-fit=cover: 切り欠き・角の裏まで黒背景を広げる -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <!-- ホーム画面から起動したときにSafariのUIを出さない -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,21 +15,63 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="app">
-    <section class="clock">
-      <div id="time" class="time">--:--</div>
-      <div id="date" class="date">----</div>
+  <!-- 844×390（iPhone 12 横向き）の座標で組み、画面サイズに合わせて拡大縮小する -->
+  <main class="stage" id="stage">
+
+    <!-- 日付（左詰め） -->
+    <section class="date" aria-label="日付">
+      <div id="d-mon">---</div>
+      <div id="d-day">--</div>
+      <div id="d-wd">---</div>
     </section>
 
-    <!-- P0 検証用の表示。P1以降で消す -->
-    <section id="diag" class="diag" aria-label="動作確認">
-      <div>表示モード: <span id="d-mode">-</span></div>
-      <div>画面スリープ防止: <span id="d-wake">-</span></div>
-      <div>連続稼働: <span id="d-uptime">0:00:00</span></div>
-      <div>画面サイズ: <span id="d-size">-</span></div>
-      <div class="hint">画面をタップすると画面スリープ防止を再取得します</div>
+    <!-- 時計 -->
+    <section class="clock" id="clock" aria-label="時刻">--:--</section>
+
+    <!-- 楽曲（P2でSpotifyと接続） -->
+    <section class="music is-idle" id="music" aria-label="再生中の曲">
+      <div class="jacket" id="m-jacket"></div>
+      <div class="song">
+        <div class="wave" id="m-wave" aria-hidden="true"></div>
+        <div class="song-text">
+          <div class="marquee" id="m-title"><span>再生停止中</span></div>
+          <div class="marquee artist" id="m-artist"><span>Spotify</span></div>
+        </div>
+      </div>
     </section>
+
+    <!-- 予定（P3でGoogleカレンダーと接続） -->
+    <section class="sched" aria-label="予定">
+      <div class="card today">
+        <div class="card-head"><span class="lb">Today</span><span class="sub" id="t-count"></span></div>
+        <div class="ev-list" id="t-list"></div>
+      </div>
+      <div class="card tmr">
+        <div class="card-head"><span class="lb">Tomorrow</span></div>
+        <div class="tmr-evs" id="n-list">—</div>
+        <div class="tmr-wx">
+          <span class="ic" id="n-icon"></span>
+          <div class="nums">
+            <span>最高<b id="n-max">--°</b></span>
+            <span>最低<b id="n-min">--°</b></span>
+            <span>降水<b id="n-pop">--%</b></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 天気（朝・昼・夕・夜） -->
+    <section class="weather" id="weather" aria-label="今日の天気">
+      <div class="slot" data-slot="0"><span class="bar"></span><span class="ic"></span><div class="vals"><span class="tmp">--°</span><span class="pop"><svg viewBox="0 0 9 12" aria-hidden="true"><path d="M4.5 0C3 3 0 5.6 0 7.8A4.5 4.5 0 0 0 9 7.8C9 5.6 6 3 4.5 0z"/></svg><span>--%</span></span></div></div>
+      <div class="slot" data-slot="1"><span class="bar"></span><span class="ic"></span><div class="vals"><span class="tmp">--°</span><span class="pop"><svg viewBox="0 0 9 12" aria-hidden="true"><path d="M4.5 0C3 3 0 5.6 0 7.8A4.5 4.5 0 0 0 9 7.8C9 5.6 6 3 4.5 0z"/></svg><span>--%</span></span></div></div>
+      <div class="slot" data-slot="2"><span class="bar"></span><span class="ic"></span><div class="vals"><span class="tmp">--°</span><span class="pop"><svg viewBox="0 0 9 12" aria-hidden="true"><path d="M4.5 0C3 3 0 5.6 0 7.8A4.5 4.5 0 0 0 9 7.8C9 5.6 6 3 4.5 0z"/></svg><span>--%</span></span></div></div>
+      <div class="slot" data-slot="3"><span class="bar"></span><span class="ic"></span><div class="vals"><span class="tmp">--°</span><span class="pop"><svg viewBox="0 0 9 12" aria-hidden="true"><path d="M4.5 0C3 3 0 5.6 0 7.8A4.5 4.5 0 0 0 9 7.8C9 5.6 6 3 4.5 0z"/></svg><span>--%</span></span></div></div>
+    </section>
+
   </main>
+
+  <div class="rotate-hint">横向きにしてください</div>
+
   <script src="app.js"></script>
 </body>
 </html>

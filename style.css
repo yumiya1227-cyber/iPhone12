@@ -1,72 +1,339 @@
-/* ===== 基本設定 ===== */
+/* =========================================================
+   SubMonitor — スタイル
+   画面は 844×390（iPhone 12 横向き）の座標で組んでいる。
+   グリッド線: 左端 44 / メイン右端 640 / 天気列 668〜800
+              上段 24〜196 / 下段 216〜368
+   ========================================================= */
+
+/* iPhone 以外（PCでの確認など）で SF Pro に近い見た目にするための代替フォント。
+   iPhone では -apple-system が先に使われるので、このファイルは読み込まれない */
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/inter-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root {
-  --bg: #000;          /* 有機ELで画素が消灯する真っ黒 */
-  --fg: #e8e8e8;       /* 真っ白より少し落として焼き付きと眩しさを抑える */
-  --muted: #8a8a8a;
-  --accent: #4ade80;
-  --warn: #f87171;
+  /* ----- 配色（iOS ダークモード） ----- */
+  --bg: #000000;
+  --label: #FFFFFF;                    /* 主テキスト */
+  --label2: rgba(235, 235, 245, .60);  /* 補助テキスト（secondaryLabel） */
+  --label3: rgba(235, 235, 245, .30);  /* 控えめ（tertiaryLabel） */
+  --gray: #636366;                     /* 非アクティブ（systemGray） */
+  --gray2: #3A3A3C;                    /* 非アクティブのバー（systemGray4） */
+  --card: #1C1C1E;                     /* ウィジェット（systemGray6） */
+  --yellow: #FFD60A;
+  --cyan: #64D2FF;
+  --cloud: #F2F2F7;
+
+  /* ----- フォント（iPhone では SF Pro / ヒラギノ） ----- */
+  --font: -apple-system, "SF Pro Display", "Inter", "Helvetica Neue", "Segoe UI", sans-serif;
+  --font-jp: -apple-system, "Inter", "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", "Meiryo", sans-serif;
+
+  --scale: 1;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
+  width: 100%;
   height: 100%;
   background: var(--bg);
-  color: var(--fg);
-  font-family: -apple-system, "Hiragino Sans", "Helvetica Neue", sans-serif;
-  /* スクロール・拡大・長押し選択を無効化して「置き時計」らしくする */
+  color: var(--label);
+  font-family: var(--font-jp);
   overflow: hidden;
   overscroll-behavior: none;
-  touch-action: manipulation;
+  touch-action: none;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
   -webkit-text-size-adjust: 100%;
 }
-
 body { position: fixed; inset: 0; }
 
-/* 切り欠き・角・ホームバーを避けた安全な表示領域 */
-#app {
+/* ----- 画面本体（844×390 を画面に合わせて拡大縮小） ----- */
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 844px;
+  height: 390px;
+  transform: translate(-50%, -50%) scale(var(--scale));
+  transform-origin: center;
+}
+
+/* ===== 日付（左詰め・時計の数字の上下に揃える） ===== */
+.date {
+  position: absolute;
+  left: 44px;
+  top: 36px;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 42px;
+  line-height: 48px;
+  letter-spacing: .01em;
+}
+
+/* ===== 時計（右端をメイン領域の右端 640 に揃える） ===== */
+.clock {
+  position: absolute;
+  right: 204px;              /* 844 - 640 */
+  top: 24px;
+  height: 172px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 174px;
+  line-height: 1;
+  letter-spacing: -.035em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ===== 楽曲 ===== */
+.jacket {
+  position: absolute;
+  left: 44px;
+  top: 216px;
+  width: 152px;
+  height: 152px;
+  border-radius: 14px;
+  background: var(--card) center / cover no-repeat;
+  overflow: hidden;
+}
+.music.is-idle .jacket::after {          /* 再生していないときの仮表示（風景アニメは後日） */
+  content: "";
   position: absolute;
   inset: 0;
-  padding:
-    max(12px, env(safe-area-inset-top))
-    max(16px, env(safe-area-inset-right))
-    max(12px, env(safe-area-inset-bottom))
-    max(16px, env(safe-area-inset-left));
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 17px, var(--gray2) 17px 19px, transparent 19px),
+    radial-gradient(circle at 50% 50%, var(--gray2) 0 4px, transparent 4px);
+}
+.song {
+  position: absolute;
+  left: 214px;
+  top: 216px;
+  width: 190px;
+  height: 152px;
+}
+.wave {                                   /* 飾りの波形：薄く、文字の背面 */
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 64px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wave i {
+  display: block;
+  width: 2px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--label);
+  opacity: .16;
+  transform: scaleY(var(--h));
+}
+.music.is-idle .wave { display: none; }
+.song-text {
+  position: relative;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  gap: 16px;
+  gap: 6px;
 }
-
-/* ===== 時計 ===== */
-.clock { text-align: center; }
-
-.time {
-  font-size: min(24vw, 50vh);
-  font-weight: 200;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
+.marquee {                                /* 長いときだけゆっくり横に流れる */
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 100%);
 }
-
-.date {
-  margin-top: 4px;
-  font-size: min(5vw, 9vh);
-  color: var(--muted);
+.marquee.artist { font-size: 15px; font-weight: 500; color: var(--label2); }
+.marquee span { display: inline-block; }
+.marquee.is-scrolling {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 16px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 16px), transparent 100%);
 }
+.marquee.is-scrolling span {
+  animation: marquee var(--dur, 12s) linear infinite;
+}
+@keyframes marquee {
+  0%, 15% { transform: translateX(0); }
+  100%    { transform: translateX(var(--dist)); }
+}
+.music.is-idle .marquee { color: var(--label3); }
+.music.is-idle .marquee.artist { color: var(--label3); }
 
-/* ===== P0 検証用 ===== */
-.diag {
+/* ===== 予定（ウィジェット） ===== */
+.sched {
+  position: absolute;
+  left: 424px;
+  top: 216px;
+  width: 216px;
+  height: 152px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 0 16px;
+}
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: var(--font);
   font-size: 11px;
-  line-height: 1.6;
-  color: var(--muted);
-  text-align: center;
+  line-height: 13px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--label2);
+}
+.card-head .sub { letter-spacing: 0; font-weight: 500; color: var(--label3); }
+
+.today {
+  height: 84px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+.ev-list { display: flex; flex-direction: column; }
+.ev {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.ev .t {
+  flex: none;
+  width: 44px;
+  font-family: var(--font);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+.ev .n { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev.empty { color: var(--label3); font-weight: 500; }
+
+/* 明日：見出し → 予定（1行） → 天気（1行）の3段で、横幅いっぱいに使う */
+.tmr {
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+.tmr-evs {
+  font-size: 12.5px;
+  line-height: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tmr-evs.empty { color: var(--label3); font-weight: 500; }
+.tmr-wx { display: flex; align-items: center; gap: 6px; }
+.tmr-wx .ic svg { width: 20px; height: 17px; display: block; }
+.nums {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 15px;
+  color: var(--label2);
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
-.diag .ok { color: var(--accent); }
-.diag .ng { color: var(--warn); }
-.diag .hint { opacity: 0.6; }
+.nums b { font-family: var(--font); color: var(--label); font-weight: 600; margin-left: 2px; }
+
+/* ===== 天気（右列4コマ） ===== */
+.weather {
+  position: absolute;
+  left: 668px;
+  top: 24px;
+  width: 132px;
+  height: 344px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.slot {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-left: 16px;
+}
+.slot .bar {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--gray2);
+}
+.slot .ic svg { width: 46px; height: 36px; display: block; overflow: visible; }
+.vals {
+  display: flex;
+  gap: 14px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+.vals .tmp { min-width: 34px; text-align: right; }
+.vals .pop { min-width: 50px; display: flex; align-items: center; gap: 3px; font-weight: 500; }
+.vals .pop svg { width: 9px; height: 12px; fill: currentColor; }
+
+/* 非アクティブ：グレーで統一 */
+.slot .c-main  { fill: var(--gray); }
+.slot .c-sun   { fill: var(--gray); }
+.slot .c-ray   { stroke: var(--gray); }
+.slot .c-accent{ fill: var(--gray); stroke: var(--gray); }
+/* 重なった図形の境目を背景色で縁取って見分けやすくする */
+.ic .c-main { stroke: var(--bg); stroke-width: 2.5px; paint-order: stroke; }
+
+/* アクティブ（現在の時間帯）：明るく・色つき */
+.slot.active .bar { background: var(--label); box-shadow: 0 0 8px rgba(255, 255, 255, .35); }
+.slot.active .vals { color: var(--label); }
+.slot.active .vals .pop { color: var(--cyan); }
+.slot.active .c-main,
+.tmr-wx .c-main  { fill: var(--cloud); }
+.slot.active .c-sun,
+.tmr-wx .c-sun   { fill: var(--yellow); }
+.slot.active .c-ray,
+.tmr-wx .c-ray   { stroke: var(--yellow); }
+.slot.active .c-accent,
+.tmr-wx .c-accent{ fill: var(--cyan); stroke: var(--cyan); }
+.tmr-wx .c-main  { stroke: var(--card); }
+
+/* ===== 縦向きのときの案内 ===== */
+.rotate-hint {
+  display: none;
+  position: fixed;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--label3);
+  font-size: 15px;
+}
+@media (orientation: portrait) {
+  .stage { display: none; }
+  .rotate-hint { display: flex; }
+}
